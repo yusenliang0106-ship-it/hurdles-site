@@ -19,4 +19,6 @@ npm run dev   # http://localhost:3000
 
 `MetroHero` props: `videoSrc`, `title`, `tagline`, `scrollHint`, `signature` (or `false`), `scrubDistance` (px of scroll input to play the full clip, default 3200), `className`, `style`.
 
+Scroll behaviour: the page locks while the video scrubs (wheel, touch, or arrow/Page/Space keys). After the video ends, about 150px more forward scrolling unlocks the page. Scrolling back to the top re-locks it and scrubs in reverse. Visitors with reduced motion never get locked. The hero assumes it sits at the top of the page.
+
 The default video streams from `cdn.21st.dev`. For production, host your own MP4 (for example in `public/`) and pass `videoSrc`.

@@ -125,13 +125,23 @@ export default function MetroHero({
       video.currentTime = t
     }
 
-    // Locked for the entire lifetime of this component — there is no
-    // release valve in either direction. Scroll input only ever moves
-    // the video back and forth; the page itself never moves.
-    function engageLock() {
+    // Where the hero sits in the document. The lock pins the page here.
+    const heroTop = () => section.getBoundingClientRect().top + window.scrollY
+
+    // Extra forward input needed once the video has finished before the
+    // page unlocks, so trackpad momentum doesn't blow straight past it.
+    const RELEASE_BUFFER = 150
+    let overscroll = 0
+    // Set once the visitor has scrolled below the hero after unlocking;
+    // reaching the hero's top again re-locks it.
+    let leftHero = false
+
+    const engageLock = () => {
       if (locked || typeof document === "undefined") return
       locked = true
-      lockedScrollY = window.scrollY
+      overscroll = 0
+      leftHero = false
+      lockedScrollY = heroTop()
       const b = document.body.style
       b.position = "fixed"
       b.top = `-${lockedScrollY}px`
@@ -140,9 +150,10 @@ export default function MetroHero({
       b.width = "100%"
       b.height = "100%"
       b.overscrollBehavior = "none"
+      section.style.touchAction = "none"
     }
 
-    function releaseLock() {
+    const releaseLock = () => {
       if (!locked || typeof document === "undefined") return
       locked = false
       const y = lockedScrollY
@@ -154,10 +165,20 @@ export default function MetroHero({
       b.width = ""
       b.height = ""
       b.overscrollBehavior = ""
+      // Let touch scrolling that starts on the hero move the page again.
+      section.style.touchAction = "pan-y"
       window.scrollTo(0, y)
     }
 
-    engageLock()
+    // Lock only if the page opens at the hero. Reduced-motion visitors
+    // never get locked: they see the final frame and scroll normally.
+    if (!reduceMotion && window.scrollY <= heroTop() + 1) {
+      engageLock()
+    } else {
+      targetProgress = currentProgress = 1
+      hasStartedScrolling = true
+      section.style.touchAction = "pan-y"
+    }
 
     function addDelta(deltaY: number) {
       const next = clamp(targetProgress + deltaY / scrubDistance, 0, 1)
@@ -166,9 +187,33 @@ export default function MetroHero({
       return true
     }
 
+    // Routes one step of scroll input. Returns true when the hero consumed
+    // it (the caller should preventDefault), false to let the page scroll.
+    function handleDelta(deltaY: number) {
+      if (reduceMotion) return false
+      // Touch input arrives twice (window + section); the repeat is 0.
+      if (deltaY === 0) return locked
+      if (!locked) {
+        // Scrolling up at the hero's top: lock again and scrub backward.
+        if (deltaY < 0 && window.scrollY <= heroTop() + 1) {
+          engageLock()
+          addDelta(deltaY)
+          return true
+        }
+        return false
+      }
+      if (deltaY > 0 && targetProgress >= 1 && currentProgress > 0.99) {
+        overscroll += deltaY
+        if (overscroll >= RELEASE_BUFFER) releaseLock()
+        return true
+      }
+      overscroll = 0
+      addDelta(deltaY)
+      return true
+    }
+
     const onWheel = (e: WheelEvent) => {
-      addDelta(e.deltaY)
-      e.preventDefault()
+      if (handleDelta(e.deltaY)) e.preventDefault()
     }
 
     const onTouchStart = (e: TouchEvent) => {
@@ -178,13 +223,35 @@ export default function MetroHero({
       const y = e.touches[0]?.clientY ?? touchStartY
       const deltaY = touchStartY - y
       touchStartY = y
-      addDelta(deltaY)
-      e.preventDefault()
+      if (handleDelta(deltaY) && e.cancelable) e.preventDefault()
+    }
+
+    // Keyboard scrolling, so the hero isn't a trap for non-mouse users.
+    const KEY_DELTAS: Record<string, number> = {
+      ArrowDown: 100, ArrowUp: -100, PageDown: 400, PageUp: -400, " ": 400,
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target?.closest("input, textarea, select, [contenteditable]")) return
+      let delta = KEY_DELTAS[e.key]
+      if (delta === undefined) return
+      if (e.key === " " && e.shiftKey) delta = -delta
+      if (handleDelta(delta)) e.preventDefault()
+    }
+
+    // Covers scrollbar drags and keyboard scrolling back to the top.
+    const onScroll = () => {
+      if (locked || reduceMotion) return
+      const top = heroTop()
+      if (window.scrollY > top + 10) leftHero = true
+      else if (leftHero && window.scrollY <= top) engageLock()
     }
 
     window.addEventListener("wheel", onWheel, { passive: false })
     window.addEventListener("touchstart", onTouchStart, { passive: true })
     window.addEventListener("touchmove", onTouchMove, { passive: false })
+    window.addEventListener("keydown", onKeyDown)
+    window.addEventListener("scroll", onScroll, { passive: true })
     // Also bind directly on the element itself, with capture — on some
     // iOS versions a window-level listener alone can lose the race
     // against the browser's own native scroll handling.
@@ -236,6 +303,8 @@ export default function MetroHero({
       window.removeEventListener("wheel", onWheel)
       window.removeEventListener("touchstart", onTouchStart)
       window.removeEventListener("touchmove", onTouchMove)
+      window.removeEventListener("keydown", onKeyDown)
+      window.removeEventListener("scroll", onScroll)
       section.removeEventListener("touchstart", onTouchStart, true)
       section.removeEventListener("touchmove", onTouchMove, true)
       cancelAnimationFrame(rafId)
