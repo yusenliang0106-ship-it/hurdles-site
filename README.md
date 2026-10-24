@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Social Media & Online Strategies website
 
-## Getting Started
-
-First, run the development server:
+Next.js 15 (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui structure.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Layout
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `components/ui/`: shadcn-style primitives (this is where `npx shadcn add …` writes). Contains `scroll-locked-video-hero.tsx`.
+- `components/demo.tsx`: demo usage of the hero, rendered by `app/page.tsx`.
+- `lib/utils.ts`: the `cn()` helper that shadcn components import.
+- `components.json`: shadcn config. Its aliases map `@/components/ui`, `@/lib/utils`, etc.
+- `app/globals.css`: Tailwind entry plus shadcn theme tokens (neutral).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Video hero
 
-## Learn More
+`MetroHero` props: `videoSrc`, `title`, `tagline`, `scrollHint`, `signature` (or `false`), `scrubDistance` (px of scroll input to play the full clip, default 3200), `className`, `style`.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The default video streams from `cdn.21st.dev`. For production, host your own MP4 (for example in `public/`) and pass `videoSrc`.
