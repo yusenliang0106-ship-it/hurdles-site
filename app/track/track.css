@@ -1,0 +1,310 @@
+/* Warm, low-contrast palette for the Hurdles track page. Overrides the shadcn tokens
+   inside .track-theme only, so the rest of the site keeps its neutral theme. */
+.track-theme {
+  --background: #f6f1ea;
+  --foreground: #1f2a2e;
+  --card: #efe7dc;
+  --card-foreground: #1f2a2e;
+  --primary: #a54e34;
+  --primary-foreground: #fbf8f3;
+  --secondary: #e6dccd;
+  --secondary-foreground: #2d3a3d;
+  --muted: #e6dccd;
+  --muted-foreground: #56615f;
+  --accent: #e6dccd;
+  --accent-foreground: #1f2a2e;
+  --border: #ddd1c1;
+  --ring: #a54e34;
+}
+
+/* Hero */
+.track-theme .parallax__layers {
+  background: #efe6dc;
+}
+.track-theme .parallax__title {
+  color: #1f2a2e;
+  font-stretch: 125%;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+.track-theme .parallax__subtitle {
+  margin-top: 0.75rem;
+  color: #a54e34;
+  font-family: var(--serif-face, Georgia, serif);
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+}
+.track-theme .parallax__content {
+  min-height: auto;
+  /* The header's visuals hang 20% below it, with the fade at their bottom edge. */
+  padding-top: calc(24svh + 2rem);
+}
+
+/* The stock photo only adds texture behind the illustrated layers. */
+.track-hero__photo {
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  filter: grayscale(1) sepia(0.35);
+}
+
+/* Navigation: a quiet frosted bar across the top, like a product page. */
+.track-nav {
+  background: color-mix(in oklab, #f6f1ea 78%, transparent);
+  backdrop-filter: saturate(1.4) blur(16px);
+  -webkit-backdrop-filter: saturate(1.4) blur(16px);
+  border-bottom: 1px solid color-mix(in oklab, #ddd1c1 80%, transparent);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .track-nav {
+    background: #f6f1ea;
+  }
+}
+
+.track-theme h1,
+.track-theme h2 {
+  font-stretch: 108%;
+}
+
+/* Diagram labels */
+.track-theme .story-label {
+  fill: #56615f;
+  font-size: 13px;
+  font-family: var(--display-face, sans-serif);
+  transition: fill 0.4s;
+}
+.track-theme .story-label[data-active] {
+  fill: #a54e34;
+  font-weight: 600;
+}
+
+/* Story steps dim until they are the active one, only once the script is running. */
+[data-enhanced] .story-step {
+  opacity: 0.3;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-enhanced] .story-step[data-active] {
+  opacity: 1;
+}
+
+/* Athlete tabs: plain text tabs on a rule, the selected one underlined. */
+.track-theme .segmented {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 1px solid #ddd1c1;
+}
+.track-theme .segmented button {
+  margin-bottom: -1px;
+  padding: 0.75rem 0;
+  border-bottom: 2px solid transparent;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #56615f;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.track-theme .segmented button:hover {
+  color: #1f2a2e;
+}
+.track-theme .segmented button[aria-selected="true"] {
+  color: #1f2a2e;
+  border-bottom-color: #a54e34;
+}
+
+/* Takeoff slider: a thin rule that fills as the takeoff moves, and a plain round handle. */
+.track-theme .takeoff-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2.25rem;
+  background: transparent;
+  cursor: pointer;
+}
+.track-theme .takeoff-range::-webkit-slider-runnable-track {
+  height: 3px;
+  background: linear-gradient(90deg, #a54e34 calc(var(--strain, 0) * 100%), #ddd1c1 0);
+}
+.track-theme .takeoff-range::-moz-range-track {
+  height: 3px;
+  background: #ddd1c1;
+}
+.track-theme .takeoff-range::-moz-range-progress {
+  height: 3px;
+  background: #a54e34;
+}
+.track-theme .takeoff-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8.5px;
+  border-radius: 50%;
+  background: #a54e34;
+  border: 3px solid #f6f1ea;
+  box-shadow: 0 0 0 1px #a54e34;
+}
+.track-theme .takeoff-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #a54e34;
+  border: 3px solid #f6f1ea;
+  box-shadow: 0 0 0 1px #a54e34;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-enhanced] .story-step {
+    transition: none;
+  }
+}
+
+/* TikTok clips: 9:16 frames on a hairline, no card chrome. */
+.track-theme .clip-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 300px));
+  gap: clamp(0.75rem, 2.4vw, 2rem);
+}
+.track-theme .clip {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.track-theme .clip-frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: #efe7dc;
+  border: 1px solid #ddd1c1;
+  color: #1f2a2e;
+}
+.track-theme .clip-lanes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.track-theme .clip-lanes line {
+  stroke: #ddd1c1;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.track-theme .clip-lanes .clip-post {
+  stroke: #56615f;
+  stroke-width: 1.5;
+}
+.track-theme .clip-lanes .clip-bar {
+  stroke: #a54e34;
+  stroke-width: 1.5;
+}
+.track-theme .clip-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #1f2a2e;
+  background: #f6f1ea;
+  transition: background 0.2s, border-color 0.2s;
+}
+.track-theme .clip-play svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 3px;
+  fill: #1f2a2e;
+  transition: fill 0.2s;
+}
+.track-theme .clip-frame:hover .clip-play,
+.track-theme .clip-frame:focus-visible .clip-play {
+  background: #a54e34;
+  border-color: #a54e34;
+}
+.track-theme .clip-frame:hover .clip-play svg,
+.track-theme .clip-frame:focus-visible .clip-play svg {
+  fill: #fbf8f3;
+}
+.track-theme .clip-corner {
+  position: absolute;
+  left: 0.8rem;
+  right: 0.8rem;
+  bottom: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #56615f;
+}
+.track-theme .clip-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+.track-theme .clip-cap {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.95rem;
+  color: #56615f;
+}
+.track-theme .clip-cap a {
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #a54e34;
+}
+.track-theme .clip-cap a:hover {
+  text-decoration: underline;
+}
+@media (max-width: 760px) {
+  .track-theme .clip-list {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: min(72%, 280px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0.75rem;
+  }
+  .track-theme .clip {
+    scroll-snap-align: start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .track-theme .clip-play,
+  .track-theme .clip-play svg {
+    transition: none;
+  }
+}
+
+/* Browser surfaces, themed from the palette. */
+.track-theme ::selection {
+  background: #a54e34;
+  color: #fbf8f3;
+}
+html:has(.track-theme) {
+  background: #f6f1ea;
+  scrollbar-color: #b9ab9a #f6f1ea;
+  caret-color: #a54e34;
+  accent-color: #a54e34;
+}
+.track-theme :focus-visible {
+  outline: 2px solid #a54e34;
+  outline-offset: 3px;
+}
+.track-theme section:focus-visible {
+  outline: none;
+}
+.track-theme a {
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+.track-theme li:target {
+  outline: 2px solid #a54e34;
+  outline-offset: 8px;
+}
