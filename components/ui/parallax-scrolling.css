@@ -1,0 +1,130 @@
+/* Styles for parallax-scrolling.tsx. Override the custom properties on .parallax
+   (or a parent) to theme it. */
+.parallax {
+  --parallax-bg: var(--background, #fff);
+  --parallax-ink: var(--foreground, #111);
+  --parallax-section-padding: clamp(4rem, 10vw, 8rem);
+  --parallax-container-padding: clamp(1rem, 4vw, 2.5rem);
+  position: relative;
+  background-color: var(--parallax-bg);
+  color: var(--parallax-ink);
+}
+
+.parallax__header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: var(--parallax-section-padding) var(--parallax-container-padding);
+}
+
+.parallax__visuals {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+}
+
+/* Hides the sub-pixel seam where the header meets the next section. */
+.parallax__black-line-overflow {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  z-index: 20;
+  width: 100%;
+  height: 2px;
+  background-color: var(--parallax-bg);
+}
+
+.parallax__layers {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.parallax__layer-img {
+  position: absolute;
+  top: -17.5%;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: 117.5%;
+  object-fit: cover;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.parallax__layer-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100svh;
+  padding-inline: var(--parallax-container-padding);
+  will-change: transform;
+}
+
+.parallax__subtitle {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.6rem);
+  text-align: center;
+}
+
+.parallax__title {
+  position: relative;
+  margin: 0 0 0.1em;
+  font-size: clamp(3.5rem, 13vw, 6rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.parallax__fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  width: 100%;
+  height: 20%;
+  background-image: linear-gradient(transparent, var(--parallax-bg));
+}
+
+.parallax__content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: var(--parallax-section-padding) var(--parallax-container-padding);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax__layer-img,
+  .parallax__layer-title {
+    will-change: auto;
+  }
+}
+
+/* Lenis' recommended base styles. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
